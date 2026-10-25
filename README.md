@@ -61,6 +61,27 @@ publishDate: 2026-01-01
 
 Draft posts (`isDraft: true`, the default) are visible in development and excluded from production builds.
 
+### External Content in CI
+
+The workflows can pull content from a separate repository at build time, so
+code and content can live in different repos. Local files in `src/content/`
+always win; external files are only added when missing.
+
+1. Set a repository variable `CONTENT_REPO` to the content repo (`owner/name`).
+2. Optionally set `CONTENT_REPO_REF` (defaults to `main`).
+3. For a private content repo, add a `CONTENT_REPO_TOKEN` secret with read
+   access. Public repos can use the built-in `GITHUB_TOKEN`.
+
+The external repo should mirror the layout of `src/content/`, e.g.:
+
+```text
+post/{lang}/{slug}/index.mdx
+note/{lang}/{slug}/index.mdx
+```
+
+Leaving `CONTENT_REPO` empty disables the step, so the workflows behave exactly
+as before.
+
 ### Deployment
 
 `.github/workflows/deploy.yml` supports two targets that run in parallel after the build:

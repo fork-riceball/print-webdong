@@ -24,6 +24,19 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Optional: pull content from another repository before building.
+      # Configure the `CONTENT_REPO` repository variable (`owner/name`) and,
+      # for private repositories, a `CONTENT_REPO_TOKEN` secret with read
+      # access. A public repository can use the default token. Local content
+      # in `src/content/` takes precedence over external content.
+      - name: Checkout external content
+        if: vars.CONTENT_REPO != ''
+        uses: ./.github/actions/checkout-content
+        with:
+          repository: ${{ vars.CONTENT_REPO }}
+          ref: ${{ vars.CONTENT_REPO_REF || 'main' }}
+          token: ${{ secrets.CONTENT_REPO_TOKEN || github.token }}
+
       - uses: pnpm/action-setup@v6
         with:
           version: 10.33.0

@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# external content checked out in CI
+.content-source/
+
 # dependencies
 node_modules/
 
