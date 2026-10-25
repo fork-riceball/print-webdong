@@ -1,0 +1,39 @@
+name: Checkout external content
+description: Check out content from another repository and merge it into src/content.
+
+# Local files win: `rsync --ignore-existing` only adds entries that do not
+# already exist locally. The external repository is expected to mirror the
+# layout of `src/content/` (i.e. `post/...` and `note/...` at its root) or to
+# contain the content collections directly at its root.
+
+inputs:
+  repository:
+    description: Repository to pull content from, in `owner/name` form.
+    required: true
+  ref:
+    description: Branch, tag, or commit to check out.
+    required: false
+    default: main
+  token:
+    description: Token with read access to the content repository.
+    required: true
+  lfs:
+    description: Whether to download Git LFS assets.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout external content
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        path: .content-source
+        token: ${{ inputs.token }}
+        lfs: ${{ inputs.lfs }}
+
+    - name: Merge external content
+      shell: bash
+      run: rsync -a --ignore-existing .content-source/ src/content/
